@@ -60,15 +60,15 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
       const style = registry.cache.inserted[name];
 
       if (typeof style !== 'boolean') {
+        const safeStyle = style ?? ''; // Fallback to an empty string if undefined
         if (isGlobal) {
-          globals.push({ name, style });
+          globals.push({ name, style: safeStyle });
         } else {
-          styles += style;
+          styles += safeStyle;
           dataEmotionAttribute += ` ${name}`;
         }
       }
     });
-
     return (
       <React.Fragment>
         {globals.map(

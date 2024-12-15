@@ -1,51 +1,57 @@
 'use client';
 
 import * as React from 'react';
-//import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
+//import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
+
+//import Typography from '@mui/material/Typography';
 
 import { useSelection } from '@/hooks/use-selection';
 
 function noop(): void {
-  // do nothing
+  // No operation
 }
 
-export interface Customer {
-  id: string;
+const statusMap = {
+  pending: { label: 'Pending', color: 'warning' },
+  paid: { label: 'Paid', color: 'success' },
+  overdue: { label: 'Overdue', color: 'error' },
+} as const;
 
-  name: string;
-  email: string;
-  address: { city: string; state: string; country: string; street: string };
-  phone: string;
-  MeterNo: number;
+export interface Bill {
+  id: string; // Bill Sr No
+  name: string; // Customer Name
+  phone: string; // Customer Number
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+  }; // Customer Address
+  amount: number; // Bill Amount
+  status: string; // Bill Status
 }
 
-interface CustomersTableProps {
-  count?: number;
-  page?: number;
-  rows?: Customer[];
-  rowsPerPage?: number;
+interface BillsTableProps {
+  rows: Bill[];
+  count: number;
+  page: number;
+  rowsPerPage: number;
 }
 
-export function CustomersTable({
-  count = 0,
-  rows = [],
-  page = 0,
-  rowsPerPage = 0,
-}: CustomersTableProps): React.JSX.Element {
+export function BillsTable({ count = 0, rows = [], page = 0, rowsPerPage = 0 }: BillsTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
-    return rows.map((customer) => customer.id);
+    return rows.map((bill) => bill.id);
   }, [rows]);
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
@@ -72,16 +78,21 @@ export function CustomersTable({
                   }}
                 />
               </TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Bill Sr No</TableCell>
+              <TableCell>Customer Name</TableCell>
+              <TableCell>Number</TableCell>
               <TableCell>Address</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Meter No</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => {
               const isSelected = selected?.has(row.id);
+              const { label, color } = statusMap[row.status.toLowerCase() as keyof typeof statusMap] ?? {
+                label: 'Unknown',
+                color: 'default',
+              };
 
               return (
                 <TableRow hover key={row.id} selected={isSelected}>
@@ -97,17 +108,16 @@ export function CustomersTable({
                       }}
                     />
                   </TableCell>
-                  <TableCell>
-                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Typography variant="subtitle2">{row.name}</Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>
-                    {row.address.city}, {row.address.state}, {row.address.country}
-                  </TableCell>
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row.name}</TableCell>
                   <TableCell>{row.phone}</TableCell>
-                  <TableCell>{row.MeterNo}</TableCell>{' '}
+                  <TableCell>
+                    {`${row.address.street}, ${row.address.city}, ${row.address.state}, ${row.address.country}`}
+                  </TableCell>
+                  <TableCell>{row.amount.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Chip color={color} label={label} size="small" />
+                  </TableCell>
                 </TableRow>
               );
             })}

@@ -1,5 +1,7 @@
 import type { Icon } from '@phosphor-icons/react/dist/lib/types';
+import { Camera } from '@phosphor-icons/react/dist/ssr/Camera'; // New import for camera icon
 import { ChartPie as ChartPieIcon } from '@phosphor-icons/react/dist/ssr/ChartPie';
+import { FileText } from '@phosphor-icons/react/dist/ssr/FileText';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { PlugsConnected as PlugsConnectedIcon } from '@phosphor-icons/react/dist/ssr/PlugsConnected';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
@@ -13,4 +15,6 @@ export const navIcons = {
   'x-square': XSquare,
   user: UserIcon,
   users: UsersIcon,
+  receipt: FileText,
+  camera: Camera, // Added camera icon
 } as Record<string, Icon>;
